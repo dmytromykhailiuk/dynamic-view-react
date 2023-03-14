@@ -108,6 +108,54 @@ const allValidators: { [key: string]: ValidatorFn } = {};
 const allAsyncValidators: { [key: string]: AsyncValidatorFn } = {};
 const allTypes: { [key: string]: TypeFn } = {};
 
+export const DynamicView = {
+  registerWrappers: (wrappers: { name: string; component: WrapperFn }[]) => {
+    wrappers.forEach(({ name, component }) => {
+      if (allWrappers[name]) {
+        throw new Error(`You already registered "${name}" Wrapper!`);
+      }
+
+      allWrappers[name] = component;
+    });
+  },
+  registerControls: (controls: { name: string; component: ControlFn }[]) => {
+    controls.forEach(({ name, component }) => {
+      if (allControls[name]) {
+        throw new Error(`You already registered "${name}" Control!`);
+      }
+
+      allControls[name] = component;
+    });
+  },
+  registerTypes: (types: { name: string; component: TypeFn }[]) => {
+    types.forEach(({ name, component }) => {
+      if (allTypes[name]) {
+        throw new Error(`You already registered "${name}" Type!`);
+      }
+
+      allTypes[name] = component;
+    });
+  },
+  registerValidators: (validators: { name: string; component: ValidatorFn }[]) => {
+    validators.forEach(({ name, component }) => {
+      if (allValidators[name]) {
+        throw new Error(`You already registered "${name}" Validator!`);
+      }
+
+      allValidators[name] = component;
+    });
+  },
+  registerAsyncValidators: (asyncValidators: { name: string; component: AsyncValidatorFn }[]) => {
+    asyncValidators.forEach(({ name, component }) => {
+      if (allAsyncValidators[name]) {
+        throw new Error(`You already registered "${name}" AsyncValidator!`);
+      }
+
+      allAsyncValidators[name] = component;
+    });
+  },
+};
+
 const RenderWrappers = memo(
   ({ control, config, wrappers = config.wrappers || [], formState, model, children, submit }: any) =>
     wrappers.reduce((acc: any, wrapper: any) => {
