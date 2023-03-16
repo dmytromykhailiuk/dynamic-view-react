@@ -1,6 +1,6 @@
 {
   "name": "@dmytromykhailiuk/dynamic-view-react",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "JSON powered / Dynamic view in React",
   "files": [
     "dist/src"
@@ -12,14 +12,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dmytromykhailiuk/react-di-module.git"
+    "url": "git+https://github.com/dmytromykhailiuk/dynamic-view-react.git"
   },
   "author": "Dmytro Mykhailiuk",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/dmytromykhailiuk/react-di-module/issues"
+    "url": "https://github.com/dmytromykhailiuk/dynamic-view-react/issues"
   },
-  "homepage": "https://github.com/dmytromykhailiuk/react-di-module#readme",
+  "homepage": "https://github.com/dmytromykhailiuk/dynamic-view-react#readme",
   "devDependencies": {
     "@types/node": "^18.15.0",
     "@types/react": "^18.0.28",

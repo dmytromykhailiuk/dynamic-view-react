@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { JSXElementConstructor, ReactElement } from 'react';
 import { FormControl, FormGroup, FormArray, ValidationErrors, InputType, Handler, ValidatorFn as Validator, AsyncValidatorFn as AsyncValidator } from 'react-reactive-form';
 export interface FieldConfig {
     defaultValue?: any;
@@ -19,6 +19,7 @@ export interface FieldConfig {
     };
     wrappers?: string[];
 }
+type MemorizedElement = ReactElement<any, string | JSXElementConstructor<any>> | null;
 export type WrapperFn = (input: {
     control: FormGroup | FormControl | FormArray;
     config: any;
@@ -30,7 +31,7 @@ export type WrapperFn = (input: {
     }>;
     submit: () => void;
     children: JSX.Element;
-}) => JSX.Element;
+}) => JSX.Element | MemorizedElement;
 export type ControlFn = (input: {
     control: FormGroup | FormControl | FormArray;
     config: any;
@@ -42,11 +43,11 @@ export type ControlFn = (input: {
     }>;
     submit: () => void;
     children?: JSX.Element;
-}) => JSX.Element;
-export type TypeFn = (input: {
+}) => JSX.Element | MemorizedElement;
+export type TypeFn<T = FormGroup | FormControl | FormArray> = (input: {
     handler: ((inputType?: InputType | undefined, value?: string | undefined) => Handler) | ((inputType?: InputType | undefined, value?: string | undefined) => Handler);
-    control: FormGroup | FormControl | FormArray;
-    field: FormGroup | FormControl | FormArray;
+    control: T;
+    field: T;
     config: any;
     formState: React.MutableRefObject<{
         [key: string]: any;
@@ -56,7 +57,11 @@ export type TypeFn = (input: {
     }>;
     submit: () => void;
     children?: JSX.Element;
-}) => JSX.Element;
+}) => JSX.Element | MemorizedElement;
+export type TypeArrayFn = TypeFn<FormArray> & {
+    add: (index?: number) => void;
+    remove: (index?: number) => void;
+};
 export type ValidatorFn = Validator;
 export type AsyncValidatorFn = AsyncValidator;
 export declare const DynamicView: {

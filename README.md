@@ -23,103 +23,126 @@ npm i @dmytromykhailiuk/dynamic-view-react
 
 ```typescript
 
-import { DynamicViewComponent, DynamicView, TypeFn } from '@dmytromykhailiuk/dynamic-view-react';
+import { DynamicViewComponent, DynamicView, FieldConfig, TypeFn, ControlFn, WrapperFn } from '@dmytromykhailiuk/dynamic-view-react';
 
-const InputComponent: TypeFn = ({ config: {props}, handler, field: {touched, hasError} }) => { // example of Type declaration
+const Input: TypeFn = ({ handler, config }) => {
   return (
     <div>
-      <label>
-        <span>{props.label}</span>
-        <input {...handler()} />
-      </label>
-      <span>
-        {touched && hasError('required') && 'Error message'}
-      </span>
+      {config?.props?.label && <div>{ config?.props?.label }</div>}
+      <input {...handler()} placeholder={config?.props?.placeholder || ''} />
     </div>
-  )}
+  )
+}
 
-DynamicView.registerControls([
-  { name: 'submit-button', component: SubmitButtonComponent }
-]);
+const FriendsList: TypeFn = ({ children, add }: any) => (
+  <div>
+    <h2>Friends list</h2>
+    { children }
+    <button style={{ marginTop: '30px' }} onClick={add}>Add friend</button>
+  </div>
+);
+
+const Checkbox: TypeFn = ({ handler, config: { props: { label } } }) => {
+  return <div>
+    <input {...handler('checkbox')} />
+    <span>{ label }</span>
+  </div> 
+}
+
+const SubmitButton: ControlFn = memo(({ submit }) => {
+  return <button style={{ marginTop: '30px' }} onClick={submit}>Submit</button>
+});
+
+const FriendInformation: WrapperFn = ({ children, control }) => {
+  const position = ((control.parent as FormArray).controls || []).findIndex(el => el === control) + 1;
+
+  const removeFriendInformation = useCallback(() => {
+    control.parent.meta.remove(position - 1);
+  }, [position])
+
+  return <div>
+    <h4>Friend { position } Information</h4>
+    { children }
+    <button onClick={removeFriendInformation}>remove friend information</button>
+  </div>
+}
 
 DynamicView.registerTypes([
-  { name: 'input', component: InputComponent },
-  { name: 'checkbox', component: CheckboxComponent },
-  { name: 'friends-list', component: FriendsListComponent },
+  { name: 'input', component: Input },
+  { name: 'checkbox', component: Checkbox },
+  { name: 'friends-list', component: FriendsList }
+]);
+
+DynamicView.registerControls([
+  { name: 'submit-button', component: SubmitButton }
 ]);
 
 DynamicView.registerWrappers([
-  { name: 'frind-information', component: InputComponent },
+  { name: 'friend-information', component: FriendInformation }
 ]);
 
 const fields: FieldConfig[] = [
   {
-    key: 'name',
-    type: 'input',
-    defaultValue: 'Andriy',
-    props: {
-      type: 'text',
-      label: 'Your name',
-      
-    },
-  },
-  {
-    key: 'email',
+    key: 'firstName',
     type: 'input',
     props: {
-      type: 'email',
-      label: 'Your email',
+      label: 'Your First Name',
+      placeholder: 'Write your first name...'
     },
     expressions: {
-      hide: 'model.name.length > 3'
+      'props.label': 'String(model?.firstName || "").split(" ").length > 1 ? "Your Full Name" : "Your First Name"'
     }
   },
   {
-    key: 'password',
+    key: 'secondName',
     type: 'input',
     props: {
-      type: 'password',
-      label: 'Your password',
+      label: 'Your Second Name',
+      placeholder: 'Write your second name...'
     },
+    expressions: {
+      hide: 'String(model?.firstName || "").split(" ").length > 1'
+    }
   },
   {
-    key: 'isAdmin',
+    key: 'showFriendsList',
     type: 'checkbox',
-    defaultValue: true,
     props: {
-      type: 'checkbox',
-      label: 'Are you admin?',
-    },
+      label: 'Show friends list'
+    }
   },
   {
     key: 'friends',
     type: 'friends-list',
+    expressions: {
+      hide: '!model?.showFriendsList'
+    },
     fieldArray: {
-      wrappers: ['friend'],
+      wrappers: ['friend-information'],
       fieldGroup: [
         {
           key: 'name',
           type: 'input',
           props: {
-            type: 'text',
-            label: 'Friend name',
-          },
+            label: 'Friend Name',
+            placeholder: 'Write your friend name...'
+          }
         },
         {
-          key: 'phone',
+          key: 'phoneNumber',
           type: 'input',
           props: {
-            type: 'phone',
-            label: 'Friend name',
-          },
-        },
-      ],
-    },
+            label: 'Friend phone number',
+            placeholder: 'Write your friend phone number...'
+          }
+        }
+      ]
+    }
   },
   {
-    control: 'submit-button',
+    control: 'submit-button'
   }
-];
+]
 
 export const FormComponent = () => {
 
